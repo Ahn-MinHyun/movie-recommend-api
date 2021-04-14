@@ -1,3 +1,9 @@
+# server endpoint
+https://khe715yx16.execute-api.us-east-1.amazonaws.com/dev/
+
+# git book
+https://app.gitbook.com/@dksalsgus/s/movie-recommender-api/
+
 # Serverless Framework Python Flask API on AWS
 
 This template demonstrates how to develop and deploy a simple Python Flask API service running on AWS Lambda using the traditional Serverless Framework.
