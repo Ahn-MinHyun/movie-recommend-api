@@ -1,5 +1,6 @@
 from flask import Flask, jsonify, make_response
 
+# 시작지점
 app = Flask(__name__)
 
 
