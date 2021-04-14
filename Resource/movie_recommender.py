@@ -10,9 +10,7 @@ import json, decimal
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, get_jwt
 
 class MovieRecommendation(Resource) :
-
-    # 영화를 조회 할 수 있는건? 써져 있지 않아 일단 아무나 할 수 있도록 
-    # 영화 조회 API
+    # 아이템 기반 영화 추천 API
     @jwt_required()
     def get(self):
 

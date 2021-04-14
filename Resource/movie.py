@@ -11,10 +11,16 @@ from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identi
 
 class MovieList(Resource) :
     # 영화를 조회 할 수 있는건? 써져 있지 않아 일단 아무나 할 수 있도록 
-    # 영화 조회 API
+    # 영화 리스트 조회 API
     @jwt_required()
-    def get(self, page):
+    def get(self):
 
+        # 쿼리 파라미터 page, avg/cnt_order, limit
+        page = request.args.get('page', default= 1 , type= int)
+        limit = request.args.get('limit', default= 25 ,type=int)
+        order = request.args.get('order', default='cnt' ,type = str)
+        print('-----------확인용----------')
+             
         # 데이터 베이스 연결
         connection = get_mysql_connection()
         cursor = connection.cursor(dictionary =True)
@@ -24,12 +30,11 @@ class MovieList(Resource) :
         query ='''select title, FLOOR(avg(r.rating)) as avg_rating, count(r.rating) as cnt_rating
                     from movie m
                     right join movie_rating r
-                        on m.id = r.item_id 
-                    group by m.title
-                    order by avg_rating desc, cnt_rating desc
-                    limit %s ,25;'''
+                    on m.id = r.item_id 
+                    group by m.title 
+                    order by '''+ order+'''_rating desc '''+ '''limit %s , %s;'''
         
-        param = (25 * page, )
+        param = (limit*page, limit)
 
         # 쿼리문 실행 후 저장
         cursor.execute(query, param)
@@ -46,13 +51,22 @@ class MovieList(Resource) :
         # print(ret) 
 
         return {"count": len(records), "movies" : records}, HTTPStatus.OK
+
     
 class MovieRate(Resource):
-    # 영화 리뷰 보기 
+    # 영화 리뷰 리스트 보기 
     @jwt_required()
-    def get(self,movie_id,page):
+    def get(self,movie_id):
         
-        # 데이터 베이스 연결
+        # 쿼리 파라미터 page, limit
+
+        print("-----------확인용------------")
+
+        page = request.args.get('page', default= 1 , type= int)
+        limit = request.args.get('limit', default= 25 ,type=int)
+        # print(page, type(limit))
+
+        # # 데이터 베이스 연결
         connection = get_mysql_connection()
         cursor = connection.cursor(dictionary =True)
 
@@ -65,17 +79,17 @@ class MovieRate(Resource):
                     join movie_user u 
                         on u.id = r.user_id
                     where m.id = %s
-                    limit %s,25 ;
+                    limit %s, %s;
                     '''
         #페이징 
-        param = (movie_id, 25 * page)
+        param = (movie_id, limit * page, limit)
 
         # 쿼리문 실행 후 저장
         cursor.execute(query, param)
         records = cursor.fetchall()
 
         if len(records) == 0:
-            return {"message": 1}, HTTPStatus.NOT_FOUND
+            return {"error_code": 1}, HTTPStatus.NOT_FOUND
 
         # 데이터베이스 닫기
         cursor.close()
@@ -86,12 +100,15 @@ class MovieRate(Resource):
         return {"movie_rate" : records}
 
 class MovieSearch(Resource):
-    # 영화 검색창
+    # 영화 검색
     @jwt_required()
     def get(self):
-        data = request.get_json()
-        print(data)
         
+        # 쿼리 파라미터 page, limit, keword         
+        page = request.args.get('page', default= 1 , type= int)
+        limit = request.args.get('limit', default= 25 ,type=int)
+        keyword = request.args.get('keyword', type = str)
+
         # 연결
         connection = get_mysql_connection()
         cursor = connection.cursor(dictionary =True)
@@ -102,9 +119,10 @@ class MovieSearch(Resource):
                     left join movie_rating r
                         on m.id = r.item_id
                     where m.title like %s 
-                    group by m.title ;'''
+                    group by m.title 
+                    limit %s, %s;'''
 
-        param = ("%"+data['movie_name']+"%",)
+        param = ("%"+keyword+"%",limit * page, limit)
 
         # 쿼리 실행/저장
         cursor.execute(qurey,param)

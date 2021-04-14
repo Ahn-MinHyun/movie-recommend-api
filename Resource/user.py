@@ -166,6 +166,11 @@ class UserBookMarkList(Resource):
     @jwt_required()
     def get(self):
         user_id = get_jwt_identity()
+
+        # 쿼리 파라미터 page, limit
+        page = request.args.get('page', default= 1 , type= int)
+        limit = request.args.get('limit', default= 25 ,type=int)
+
         # 데이터 베이스 연결
         connection = get_mysql_connection()
         cursor = connection.cursor(dictionary =True)
@@ -176,10 +181,11 @@ class UserBookMarkList(Resource):
                     from movie_bookmarks b
                     join movie m
                         on m.id = b.item_id
-                    where b.user_id = %s;
+                    where b.user_id = %s
+                    limit %s, %s;
                     '''
         #페이징 
-        param = (user_id, )
+        param = (user_id,limit * page, limit )
 
         # 쿼리문 실행 후 저장
         cursor.execute(query, param)

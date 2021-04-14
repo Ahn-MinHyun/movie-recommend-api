@@ -40,13 +40,13 @@ api.add_resource(UserResource,'/v1//movie/login')
 api.add_resource(UserLogoutResource,'/v1/movie/logout')
 
 # 영화 리스트 경로 
-api.add_resource(MovieList,'/v1/movie/list/<int:page>')
+api.add_resource(MovieList,'/v1/movie/list') # 쿼리 파라미터 page, avg/cnt_order, limit
 
-# 특정 영화 리뷰 경로
-api.add_resource(MovieRate,'/v1/movie/<int:movie_id>/<int:page>')
+# 영화 리뷰 경로
+api.add_resource(MovieRate,'/v1/movie/<int:movie_id>') # 쿼리 파라미터 page, limit
 
 # 영화 검색 경로
-api.add_resource(MovieSearch,'/v1/movie/search')
+api.add_resource(MovieSearch,'/v1/movie/search') # 쿼리 파라미터 page, limit, keword
 
 # 영화 별점 작성 경로
 api.add_resource(MovieRating,'/v1/movie/<int:movie_id>/rating')
@@ -58,10 +58,10 @@ api.add_resource(UserReview, '/v1/movie/user/rating')
 api.add_resource(MovieRecommendation,'/v1/movie/user/recommendation')
 
 # 유저 영화 북마크 경로
-api.add_resource(MovieBookMark,'/v1/movie/<int:movie_id>/bookmark')
+api.add_resource(MovieBookMark,'/v1/movie/user/<int:movie_id>/bookmark')
 
 # 유저 영화 북마크 리스트 경로
-api.add_resource(UserBookMarkList,'/v1/movie/user/bookmark')
+api.add_resource(UserBookMarkList,'/v1/movie/user/bookmark') # 쿼리 파라미터 page, limit
 
 if __name__=="__main__":
 
